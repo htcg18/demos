@@ -8,7 +8,7 @@
 
   express = require('express');
 
-  app = express().use(express["static"](__dirname + '/app'));
+  app = express().use(express.directory(__dirname + '/apps')).use(express["static"](__dirname + '/apps'));
 
   app.listen(PORT, function() {
     return log("listening on port " + PORT);

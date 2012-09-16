@@ -16,7 +16,7 @@ module.exports = function(grunt) {
           }
         },
         files: {
-          'app/js/tpl.js': ['app/tpl/*.html']
+          'js/tpl.js': ['tpl/*.html']
         }
       }
     }
