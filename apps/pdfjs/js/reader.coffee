@@ -1,6 +1,6 @@
 log = console.log.bind console
 
-filename = location.hash[1..]
+document.title = filename = location.hash[1..]
 PDF_URL = 'pdfs/' + filename
 NAMESPACE = "pdfjs.#{filename}"
 

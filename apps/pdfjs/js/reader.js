@@ -4,7 +4,7 @@
 
   log = console.log.bind(console);
 
-  filename = location.hash.slice(1);
+  document.title = filename = location.hash.slice(1);
 
   PDF_URL = 'pdfs/' + filename;
 
