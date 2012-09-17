@@ -15,10 +15,24 @@ ul {
   color: lime;
 }
 
+.active {
+  color: black;
+}
+
+.file.active {
+  background: white;
+}
+
 .dir {
   color: aqua;
+}
+.dir.active {
+  background: aqua;
 }
 
 .symlink {
   color: magenta;
+}
+.symlink.active {
+  background: magenta;
 }

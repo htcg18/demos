@@ -27,6 +27,7 @@ DirView = Backbone.View.extend
     @collection.each (file) =>
       fileView = new FileView model: file
       @$el.append fileView.render().el
+    @collection.at(0).set 'active', true
     @
 
 Column = Backbone.View.extend()

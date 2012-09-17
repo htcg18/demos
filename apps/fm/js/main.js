@@ -44,6 +44,7 @@
         });
         return _this.$el.append(fileView.render().el);
       });
+      this.collection.at(0).set('active', true);
       return this;
     }
   });
