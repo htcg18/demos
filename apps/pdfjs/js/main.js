@@ -18,9 +18,10 @@
 
   canvasContext = canvas.getContext('2d');
 
-  renderPage = function(num) {
-    localStorage["" + NAMESPACE + ".pageNum"] = num;
-    return pdf.getPage(num).then(function(page) {
+  renderPage = function(_pageNum) {
+    pageNum = _pageNum;
+    localStorage["" + NAMESPACE + ".pageNum"] = pageNum;
+    return pdf.getPage(pageNum).then(function(page) {
       var clientHeight, clientWidth, pageHeight, pageWidth, scale, viewport, _, _ref, _ref1;
       _ref = page.pageInfo.view, _ = _ref[0], _ = _ref[1], pageWidth = _ref[2], pageHeight = _ref[3];
       _ref1 = document.documentElement, clientWidth = _ref1.clientWidth, clientHeight = _ref1.clientHeight;
@@ -50,13 +51,11 @@
   };
 
   goStart = function() {
-    pageNum = 1;
-    return renderPage(pageNum);
+    return renderPage(1);
   };
 
   goEnd = function() {
-    pageNum = pdf.numPages;
-    return renderPage(pageNum);
+    return renderPage(pdf.numPages);
   };
 
   key('g', goStart);

@@ -10,9 +10,10 @@ pageNum = localStorage["#{NAMESPACE}.pageNum"] or 1
 canvas = $('canvas')[0]
 canvasContext = canvas.getContext '2d'
 
-renderPage = (num) ->
-  localStorage["#{NAMESPACE}.pageNum"] = num
-  pdf.getPage(num).then (page) ->
+renderPage = (_pageNum) ->
+  pageNum = _pageNum
+  localStorage["#{NAMESPACE}.pageNum"] = pageNum
+  pdf.getPage(pageNum).then (page) ->
     [_, _, pageWidth, pageHeight] = page.pageInfo.view
     {clientWidth, clientHeight} = document.documentElement
 
@@ -33,12 +34,10 @@ goNext = ->
   renderPage ++pageNum
 
 goStart = ->
-  pageNum = 1
-  renderPage pageNum
+  renderPage 1
 
 goEnd = ->
-  pageNum = pdf.numPages
-  renderPage pageNum
+  renderPage pdf.numPages
 
 key 'g', goStart
 key 'shift+g', goEnd
