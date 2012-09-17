@@ -1,6 +1,9 @@
 body {
   background: black;
 }
+body.nojs canvas {
+  background: transparent;
+}
 canvas {
   background: white;
   display: block;

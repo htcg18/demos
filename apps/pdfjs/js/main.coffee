@@ -47,3 +47,4 @@ key 'shift+space, k', goPrev
 PDFJS.getDocument(PDF_URL).then (_pdf) ->
   pdf = _pdf
   renderPage pageNum
+  $('body').removeClass 'nojs'

@@ -68,7 +68,8 @@
 
   PDFJS.getDocument(PDF_URL).then(function(_pdf) {
     pdf = _pdf;
-    return renderPage(pageNum);
+    renderPage(pageNum);
+    return $('body').removeClass('nojs');
   });
 
 }).call(this);
