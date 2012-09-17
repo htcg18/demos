@@ -5,8 +5,10 @@ File = Backbone.Model.extend
     active: false
 
 FileView = Backbone.View.extend
+  tagName: 'li'
   template: JST.file
   render: ->
+    @$el.addClass @model.get 'type'
     @$el.html @template @model.toJSON()
     @
   initialize: ->
@@ -18,6 +20,7 @@ Dir = Backbone.Collection.extend
   model: File
 
 DirView = Backbone.View.extend
+  tagName: 'ul'
   initialize: ->
     @collection.on 'reset', @render, @
   render: ->
@@ -63,5 +66,6 @@ columns = new Columns
   model: app
   el: '#columns'
 
-app.rpc 'env', ['HOME'], (home) ->
-  app.set 'pwd', home
+app.rpc 'env', ['HOME', 'USER', 'HOSTNAME'], (data) ->
+  [pwd, user, hostname] = data
+  app.set { pwd, user, hostname }

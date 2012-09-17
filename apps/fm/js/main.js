@@ -11,8 +11,10 @@
   });
 
   FileView = Backbone.View.extend({
+    tagName: 'li',
     template: JST.file,
     render: function() {
+      this.$el.addClass(this.model.get('type'));
       this.$el.html(this.template(this.model.toJSON()));
       return this;
     },
@@ -29,6 +31,7 @@
   });
 
   DirView = Backbone.View.extend({
+    tagName: 'ul',
     initialize: function() {
       return this.collection.on('reset', this.render, this);
     },
@@ -102,8 +105,14 @@
     el: '#columns'
   });
 
-  app.rpc('env', ['HOME'], function(home) {
-    return app.set('pwd', home);
+  app.rpc('env', ['HOME', 'USER', 'HOSTNAME'], function(data) {
+    var hostname, pwd, user;
+    pwd = data[0], user = data[1], hostname = data[2];
+    return app.set({
+      pwd: pwd,
+      user: user,
+      hostname: hostname
+    });
   });
 
 }).call(this);
