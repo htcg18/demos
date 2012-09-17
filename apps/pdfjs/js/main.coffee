@@ -1,15 +1,17 @@
 log = console.log.bind console
 
 PDF_URL = 'assets/doctorow_down_and_out.pdf'
+NAMESPACE = 'pdfjs'
 
 PDFJS.disableWorker = true # docs where
 
 pdf = null
-pageNum = 1
+pageNum = localStorage["#{NAMESPACE}.pageNum"] or 1
 canvas = $('canvas')[0]
 canvasContext = canvas.getContext '2d'
 
 renderPage = (num) ->
+  localStorage["#{NAMESPACE}.pageNum"] = num
   pdf.getPage(num).then (page) ->
     [_, _, pageWidth, pageHeight] = page.pageInfo.view
     {clientWidth, clientHeight} = document.documentElement
