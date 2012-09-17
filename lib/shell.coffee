@@ -30,6 +30,8 @@ module.exports =
     values
 
   ls: (_path) ->
+    if _path[0] isnt '/'
+      _path = path.resolve 'apps', _path
     stats = []
     for basename in fs.readdirSync _path
       abs = path.join _path, basename
