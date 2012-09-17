@@ -23,10 +23,10 @@ ul {
   background: white;
 }
 
-.dir {
+.directory {
   color: aqua;
 }
-.dir.active {
+.directory.active {
   background: aqua;
 }
 

@@ -10,7 +10,7 @@ getType = (stat) ->
   if stat.isFile()
     return 'file'
   if stat.isDirectory()
-    return 'dir'
+    return 'directory'
   if stat.isBlockDevice()
     return 'block'
   if stat.isCharacterDevice()
