@@ -17,7 +17,7 @@ module.exports = function(grunt) {
           }
         },
         files: {
-          'js/tpl.js': ['tpl/*.html']
+          'js/templates.js': ['templates/*.html']
         }
       }
     }
