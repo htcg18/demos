@@ -30,6 +30,16 @@ goNext = ->
   return unless pageNum < pdf.numPages
   renderPage ++pageNum
 
+goStart = ->
+  pageNum = 1
+  renderPage pageNum
+
+goEnd = ->
+  pageNum = pdf.numPages
+  renderPage pageNum
+
+key 'g', goStart
+key 'shift+g', goEnd
 key 'space, j', goNext
 key 'shift+space, k', goPrev
 
