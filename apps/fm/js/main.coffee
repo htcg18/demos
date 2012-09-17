@@ -13,11 +13,22 @@ FileView = Backbone.View.extend
     @
   initialize: ->
     @model.on 'change:active', @active, @
-  active: (active) ->
+  active: (file, active) ->
     @$el.toggleClass 'active', active
 
-Dir = Backbone.Collection.extend
+Files = Backbone.Collection.extend
   model: File
+
+Dir = Backbone.Model.extend
+  down: ->
+    active = @get 'active'
+    files  = @get 'files'
+    length = files.length
+    return unless active < length - 1
+    files.at(active).set 'active', false
+    active += 1
+    files.at(active).set 'active', true
+    @set 'active', active
 
 DirView = Backbone.View.extend
   tagName: 'ul'
@@ -27,20 +38,23 @@ DirView = Backbone.View.extend
     @collection.each (file) =>
       fileView = new FileView model: file
       @$el.append fileView.render().el
-    @collection.at(0).set 'active', true
+    if @collection.length
+      @collection.at(0).set 'active', true
+      @model.set 'active', 0
     @
-
-Column = Backbone.View.extend()
 
 Columns = Backbone.View.extend
   initialize: ->
     @model.on 'change:pwd', @append, @
   append: (app, pwd) ->
     app.rpc 'ls', [pwd], (files) =>
-      dir = new Dir files
+      files = new Files files
+      dir = new Dir { files }
       dirView = new DirView
-        collection: dir
+        collection: files
+        model: dir
       @$el.append dirView.render().el
+      dir.down()
 
 Header = Backbone.View.extend
   template: JST.header
