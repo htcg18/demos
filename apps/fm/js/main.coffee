@@ -60,8 +60,8 @@ Columns = Backbone.View.extend
     for shortcut, f of @shortcuts
       key shortcut, @[f].bind @
     App.on 'change:dirname', @append, @
-  append: (App, pwd) ->
-    App.rpc 'ls', [pwd], (files) =>
+  append: (App, dirname) ->
+    App.rpc 'ls', [dirname], (files) =>
       files = new Files files
       @dir = dir = new Dir { files }
       dirView = new DirView

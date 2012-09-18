@@ -93,9 +93,9 @@
       }
       return App.on('change:dirname', this.append, this);
     },
-    append: function(App, pwd) {
+    append: function(App, dirname) {
       var _this = this;
-      return App.rpc('ls', [pwd], function(files) {
+      return App.rpc('ls', [dirname], function(files) {
         var dir, dirView;
         files = new Files(files);
         _this.dir = dir = new Dir({
