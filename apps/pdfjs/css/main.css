@@ -9,3 +9,9 @@ canvas {
   display: block;
   margin: 0 auto;
 }
+#info {
+  position: fixed;
+  top: 0;
+  right: 0;
+  color: white;
+}

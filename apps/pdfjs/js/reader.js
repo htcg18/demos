@@ -22,6 +22,7 @@
 
   renderPage = function(_pageNum) {
     pageNum = _pageNum;
+    $('#pageNum').text(pageNum);
     localStorage["" + NAMESPACE + ".pageNum"] = pageNum;
     return pdf.getPage(pageNum).then(function(page) {
       var clientHeight, clientWidth, pageHeight, pageWidth, scale, viewport, _, _ref, _ref1;
@@ -70,6 +71,7 @@
 
   PDFJS.getDocument(PDF_URL).then(function(_pdf) {
     pdf = _pdf;
+    $('#numPages').text(pdf.pdfInfo.numPages);
     renderPage(pageNum);
     return $('body').removeClass('nojs');
   });

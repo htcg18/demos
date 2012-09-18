@@ -13,6 +13,7 @@ canvasContext = canvas.getContext '2d'
 
 renderPage = (_pageNum) ->
   pageNum = _pageNum
+  $('#pageNum').text pageNum
   localStorage["#{NAMESPACE}.pageNum"] = pageNum
   pdf.getPage(pageNum).then (page) ->
     [_, _, pageWidth, pageHeight] = page.pageInfo.view
@@ -47,5 +48,6 @@ key 'shift+space, k, up, left', goPrev
 
 PDFJS.getDocument(PDF_URL).then (_pdf) ->
   pdf = _pdf
+  $('#numPages').text pdf.pdfInfo.numPages
   renderPage pageNum
   $('body').removeClass 'nojs'
