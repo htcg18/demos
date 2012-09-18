@@ -64,9 +64,9 @@
 
   key('shift+g', goEnd);
 
-  key('space, j', goNext);
+  key('space, j, down, right', goNext);
 
-  key('shift+space, k', goPrev);
+  key('shift+space, k, up, left', goPrev);
 
   PDFJS.getDocument(PDF_URL).then(function(_pdf) {
     pdf = _pdf;

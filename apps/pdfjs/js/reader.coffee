@@ -42,8 +42,8 @@ goEnd = ->
 
 key 'g', goStart
 key 'shift+g', goEnd
-key 'space, j', goNext
-key 'shift+space, k', goPrev
+key 'space, j, down, right', goNext
+key 'shift+space, k, up, left', goPrev
 
 PDFJS.getDocument(PDF_URL).then (_pdf) ->
   pdf = _pdf
