@@ -5,7 +5,7 @@ var __p='';var print=function(){__p+=Array.prototype.join.call(arguments, '')};
 with(obj||{}){
 __p+=''+
 _.escape( basename )+
-'\n';
+'';
 }
 return __p;
 };
@@ -18,8 +18,10 @@ _.escape( user )+
 '@'+
 _.escape( hostname )+
 '</span>:<span class="directory">'+
-_.escape( pwd )+
-'</span>\n';
+_.escape( dirname )+
+'</span>'+
+_.escape( basename )+
+'\n';
 }
 return __p;
 };

@@ -9,14 +9,12 @@ ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
+  vertical-align: top;
+  display: inline-block;
 }
 
 #header .user {
   color: lime;
-}
-
-.active {
-  color: black;
 }
 
 .file.active {
@@ -26,6 +24,7 @@ ul {
 .directory {
   color: aqua;
 }
+
 .directory.active {
   background: aqua;
 }
@@ -33,6 +32,11 @@ ul {
 .symlink {
   color: magenta;
 }
+
 .symlink.active {
   background: magenta;
+}
+
+.active {
+  color: black;
 }
