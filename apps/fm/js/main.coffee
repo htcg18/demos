@@ -5,9 +5,27 @@ File = Backbone.Model.extend()
 FileView = Backbone.View.extend
   tagName: 'li'
   template: JST.file
+  suffix: 'B K M G T P'.split ' '
   render: ->
-    @$el.addClass @model.get 'type'
-    @$el.html @template @model.toJSON()
+    type = @model.get 'type'
+    @$el.addClass type
+
+    switch type
+      when 'file', 'symlink'
+        stats = @model.get 'size'
+        i = 0
+        while stats > 1024
+          stats /= 1024
+          i++
+        stats = stats.toPrecision 3
+        stats += @suffix[i]
+      when 'directory'
+        stats = -2 + @model.get 'nlink'
+      else
+        stats = type
+
+    basename = @model.get 'basename'
+    @$el.html @template { stats, basename }
     @
   initialize: ->
     @model.on 'change:active', @active, @

@@ -9,9 +9,34 @@
   FileView = Backbone.View.extend({
     tagName: 'li',
     template: JST.file,
+    suffix: 'B K M G T P'.split(' '),
     render: function() {
-      this.$el.addClass(this.model.get('type'));
-      this.$el.html(this.template(this.model.toJSON()));
+      var basename, i, stats, type;
+      type = this.model.get('type');
+      this.$el.addClass(type);
+      switch (type) {
+        case 'file':
+        case 'symlink':
+          stats = this.model.get('size');
+          i = 0;
+          while (stats > 1024) {
+            stats /= 1024;
+            i++;
+          }
+          stats = stats.toPrecision(3);
+          stats += this.suffix[i];
+          break;
+        case 'directory':
+          stats = -2 + this.model.get('nlink');
+          break;
+        default:
+          stats = type;
+      }
+      basename = this.model.get('basename');
+      this.$el.html(this.template({
+        stats: stats,
+        basename: basename
+      }));
       return this;
     },
     initialize: function() {

@@ -8,12 +8,30 @@ body {
 .column {
   display: inline-block;
   vertical-align: top;
+  width: 200px;
+  margin: .2em;
 }
 
 ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
+}
+
+li {
+  white-space: nowrap;
+  display: -webkit-flex;
+  -webkit-justify-content: space-between;
+}
+
+.basename {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats {
+  -webkit-flex: none;
+  margin-left: .5em;
 }
 
 #header .user {
@@ -27,7 +45,6 @@ ul {
 .directory {
   color: aqua;
 }
-
 .directory.active {
   background: aqua;
 }
@@ -35,9 +52,15 @@ ul {
 .symlink {
   color: magenta;
 }
-
 .symlink.active {
   background: magenta;
+}
+
+.block, .character, .fifo {
+  color: yellow;
+}
+.block.active, .character.active, .fifo.active {
+  background: yellow;
 }
 
 .active {
