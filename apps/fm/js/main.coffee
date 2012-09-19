@@ -48,6 +48,9 @@ DirView = Backbone.View.extend
     @model.goRel 0
     @
 
+Column = Backbone.View.extend
+  className: 'column'
+
 Columns = Backbone.View.extend
   shortcuts:
     'g, shift+k, home': 'home'
@@ -61,13 +64,15 @@ Columns = Backbone.View.extend
       key shortcut, @[f].bind @
     App.on 'change:dirname', @append, @
   append: (App, dirname) ->
+    col = new Column
+    @$el.append col.render().el
     App.rpc 'ls', [dirname], (files) =>
       files = new Files files
       @dir = dir = new Dir { files }
       dirView = new DirView
         collection: files
         model: dir
-      @$el.append dirView.render().el
+      col.$el.append dirView.render().el
   home: ->
     @dir.goAbs 0
   end: ->

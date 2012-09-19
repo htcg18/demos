@@ -5,12 +5,15 @@ body {
   font-size: 12pt;
 }
 
+.column {
+  display: inline-block;
+  vertical-align: top;
+}
+
 ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  vertical-align: top;
-  display: inline-block;
 }
 
 #header .user {
