@@ -10,7 +10,11 @@
 
   shell = require('./lib/shell');
 
-  app = express().use(express.directory(__dirname + '/apps')).use(express["static"](__dirname + '/apps')).use(express.bodyParser());
+  app = express().use(express["static"](__dirname + '/apps')).use(express.bodyParser());
+
+  app.get('/', function(req, res) {
+    return res.redirect('/default');
+  });
 
   app.post('/rpc', function(req, res) {
     var args, method, _ref;

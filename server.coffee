@@ -7,9 +7,11 @@ express = require 'express'
 shell = require './lib/shell'
 
 app = express()
-  .use(express.directory __dirname + '/apps')
   .use(express.static __dirname + '/apps')
   .use(express.bodyParser())
+
+app.get '/', (req, res) ->
+  res.redirect '/default'
 
 app.post '/rpc', (req, res) ->
   {method, args} = req.body
