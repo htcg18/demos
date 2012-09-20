@@ -62,7 +62,7 @@
       return this.go(active);
     },
     go: function(active) {
-      var files, length, now, old;
+      var basename, files, length, now, old;
       files = this.get('files');
       length = files.length;
       if (!((0 <= active && active < length))) {
@@ -76,11 +76,13 @@
       now.set({
         active: true
       });
+      basename = now.get('basename');
       this.set({
-        active: active
+        active: active,
+        basename: basename
       });
       return App.set({
-        basename: now.get('basename')
+        basename: basename
       });
     }
   });
@@ -112,6 +114,7 @@
 
   DirsView = Backbone.View.extend({
     shortcuts: {
+      'h, left': 'left',
       'j, down': 'down',
       'k, up': 'up',
       'l, right': 'right'
@@ -124,7 +127,18 @@
         key(shortcut, this[cb].bind(this));
       }
       this.collection.on('add', this.add, this);
+      this.collection.on('remove', this.remove, this);
       return this.model.on('change:dirname', this.dirname, this);
+    },
+    remove: function(model, collection) {
+      var basename, dirname;
+      this.model = this.collection.at(this.collection.length - 1);
+      dirname = this.model.get('dirname');
+      basename = this.model.get('basename');
+      return App.set({
+        dirname: dirname,
+        basename: basename
+      });
     },
     add: function(model) {
       var dirView;
@@ -137,6 +151,9 @@
         dirname: model.get('dirname')
       });
     },
+    left: function() {
+      return this.collection.pop();
+    },
     down: function() {
       return this.model.goDelta(+1);
     },
@@ -148,11 +165,15 @@
       dirname = App.get('dirname');
       basename = App.get('basename');
       return App.set({
-        dirname: dirname + basename + '/'
+        dirname: dirname + basename + '/',
+        basename: ''
       });
     },
     dirname: function(App, dirname) {
       var _this = this;
+      if (!(App.previous('dirname').length < dirname.length)) {
+        return;
+      }
       return App.rpc('ls', [dirname], function(files) {
         var dir;
         files = new Files(files);
@@ -178,6 +199,7 @@
 
   Application = Backbone.Model.extend({
     defaults: {
+      dirname: '',
       basename: ''
     },
     rpc: function(method, args, cb) {

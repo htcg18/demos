@@ -47,8 +47,9 @@ Dir = Backbone.Model.extend
     now = files.at active
     old.set active: false
     now.set active: true
-    @set { active }
-    App.set basename: now.get 'basename'
+    basename = now.get 'basename'
+    @set { active, basename }
+    App.set { basename }
 
 DirView = Backbone.View.extend
   tagName: 'ul'
@@ -68,6 +69,7 @@ Dirs = Backbone.Collection.extend
 
 DirsView = Backbone.View.extend
   shortcuts:
+    'h, left': 'left'
     'j, down': 'down'
     'k, up': 'up'
     'l, right': 'right'
@@ -75,12 +77,20 @@ DirsView = Backbone.View.extend
     for shortcut, cb of @shortcuts
       key shortcut, @[cb].bind @
     @collection.on 'add', @add, @
+    @collection.on 'remove', @remove, @
     @model.on 'change:dirname', @dirname, @
+  remove: (model, collection) ->
+    @model = @collection.at @collection.length - 1
+    dirname  = @model.get 'dirname'
+    basename = @model.get 'basename'
+    App.set { dirname, basename }
   add: (model) ->
     @model = model
     dirView = new DirView { model }
     @$el.append dirView.render().el
     App.set dirname: model.get 'dirname'
+  left: ->
+    @collection.pop()
   down: ->
     @model.goDelta +1
   up: ->
@@ -88,8 +98,11 @@ DirsView = Backbone.View.extend
   right: ->
     dirname  = App.get 'dirname'
     basename = App.get 'basename'
-    App.set dirname: dirname + basename + '/'
+    App.set
+      dirname: dirname + basename + '/'
+      basename: ''
   dirname: (App, dirname) ->
+    return unless App.previous('dirname').length < dirname.length #XXX
     App.rpc 'ls', [dirname], (files) =>
       files = new Files files
       dir = new Dir { files, dirname }
@@ -105,6 +118,7 @@ Header = Backbone.View.extend
 
 Application = Backbone.Model.extend
   defaults:
+    dirname: ''
     basename: ''
   rpc: (method, args, cb) ->
     $.post '/rpc', { method, args }, cb, 'json'
