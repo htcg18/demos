@@ -19,7 +19,9 @@
   app.post('/rpc', function(req, res) {
     var args, method, _ref;
     _ref = req.body, method = _ref.method, args = _ref.args;
-    return res.json(shell[method].apply(shell, args));
+    return shell[method](args, function(data) {
+      return res.json(data);
+    });
   });
 
   app.listen(PORT, function() {

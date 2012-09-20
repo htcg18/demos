@@ -15,7 +15,8 @@ app.get '/', (req, res) ->
 
 app.post '/rpc', (req, res) ->
   {method, args} = req.body
-  res.json shell[method].apply shell, args
+  shell[method] args, (data) ->
+    res.json data
 
 app.listen PORT, ->
   log "listening on port #{PORT}"

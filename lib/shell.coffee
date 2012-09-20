@@ -4,6 +4,11 @@ fs   = require 'fs'
 os   = require 'os'
 path = require 'path'
 
+mmm  = require 'mmmagic'
+step = require 'step'
+
+magic = new mmm.Magic mmm.MAGIC_MIME_TYPE
+
 process.env['HOSTNAME'] = os.hostname()
 
 getType = (stat) ->
@@ -23,20 +28,23 @@ getType = (stat) ->
     return 'socket'
 
 module.exports =
-  env: (keys...) ->
+  env: (args, cb) ->
     values = []
-    for key in keys
-      values.push process.env[key]
-    values
+    for arg in args
+      values.push process.env[arg]
+    cb values
 
-  ls: (_path) ->
-    if _path[0] isnt '/'
-      _path = path.resolve 'apps', _path
-    stats = []
-    for basename in fs.readdirSync _path
-      abs = path.join _path, basename
-      stat = fs.lstatSync abs
-      stat.basename = basename
-      stat.type = getType stat
-      stats.push stat
-    stats
+  ls: (args, cb) ->
+    [dirname] = args
+    if dirname[0] isnt '/'
+      dirname = path.resolve 'apps', dirname
+    fs.readdir dirname, (err, basenames) ->
+      throw err if err
+      stats = []
+      for basename in basenames
+        abs = path.join dirname, basename
+        stat = fs.statSync abs
+        stat.basename = basename
+        stat.type = getType stat
+        stats.push stat
+      cb stats
