@@ -40,11 +40,15 @@ module.exports =
       dirname = path.resolve 'apps', dirname
     fs.readdir dirname, (err, basenames) ->
       throw err if err
-      stats = []
-      for basename in basenames
-        abs = path.join dirname, basename
-        stat = fs.statSync abs
-        stat.basename = basename
-        stat.type = getType stat
-        stats.push stat
-      cb stats
+      step ->
+        group = @group()
+        for basename in basenames
+          abs = path.join dirname, basename
+          fs.stat abs, group()
+        return # prevent coffeescript from returning a value and confusing step
+      , (err, stats) ->
+        throw err if err
+        for stat, i in stats
+          stat.basename = basenames[i]
+          stat.type = getType stat
+        cb stats
