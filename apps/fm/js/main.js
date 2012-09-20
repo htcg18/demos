@@ -184,8 +184,11 @@
       });
     },
     dirname: function(App, dirname) {
-      var _this = this;
-      if (!(App.previous('dirname').length < dirname.length)) {
+      var prev,
+        _this = this;
+      prev = App.previous('dirname');
+      prev || (prev = '');
+      if (!(prev.length < dirname.length)) {
         return;
       }
       return App.rpc('ls', [dirname], function(files) {
@@ -213,7 +216,6 @@
 
   Application = Backbone.Model.extend({
     defaults: {
-      dirname: '',
       basename: ''
     },
     rpc: function(method, args, cb) {

@@ -112,7 +112,9 @@ DirsView = Backbone.View.extend
       dirname: dirname + basename + '/'
       basename: ''
   dirname: (App, dirname) ->
-    return unless App.previous('dirname').length < dirname.length #XXX
+    prev = App.previous 'dirname'
+    prev or= ''
+    return unless prev.length < dirname.length #XXX
     App.rpc 'ls', [dirname], (files) =>
       files = new Files files
       dir = new Dir { files, dirname }
@@ -128,7 +130,6 @@ Header = Backbone.View.extend
 
 Application = Backbone.Model.extend
   defaults:
-    dirname: ''
     basename: ''
   rpc: (method, args, cb) ->
     $.post '/rpc', { method, args }, cb, 'json'
