@@ -1,132 +1,123 @@
 log = console.log.bind console
 
-File = Backbone.Model.extend()
+File = Backbone.Model.extend
+  prefixes: 'B K M G T P'.split ' '
+  initialize: (attrs) ->
+    {type, size, nlink} = attrs
+    switch type
+      when 'file', 'symlink'
+        i = 0
+        while size > 1024
+          size /= 1024
+          i++
+        size = size.toPrecision 3
+        stats = size + @prefixes[i]
+      when 'directory'
+        stats = nlink - 2
+      else
+        stats = type
+    @set { stats }
 
 FileView = Backbone.View.extend
   tagName: 'li'
   template: JST.file
-  suffix: 'B K M G T P'.split ' '
   render: ->
-    type = @model.get 'type'
-    @$el.addClass type
-
-    switch type
-      when 'file', 'symlink'
-        stats = @model.get 'size'
-        i = 0
-        while stats > 1024
-          stats /= 1024
-          i++
-        stats = stats.toPrecision 3
-        stats += @suffix[i]
-      when 'directory'
-        stats = -2 + @model.get 'nlink'
-      else
-        stats = type
-
-    basename = @model.get 'basename'
-    @$el.html @template { stats, basename }
+    @$el.html @template @model.toJSON()
     @
+  active: (model, active) ->
+    @$el.toggleClass 'active', active
   initialize: ->
     @model.on 'change:active', @active, @
-  active: (file, active) ->
-    @$el.toggleClass 'active', active
+    @$el.addClass @model.get 'type'
 
 Files = Backbone.Collection.extend
   model: File
 
 Dir = Backbone.Model.extend
   defaults:
-    index: 0
-  goAbs: (index) ->
-    if index is -1
-      index += @get('files').length
-    @changeIndex index
-  goRel: (delta) ->
-    index = delta + @get 'index'
-    @changeIndex index
-  changeIndex: (index) ->
+    active: 0
+  goDelta: (delta) ->
+    active = delta + @get 'active'
+    @go active
+  go: (active) ->
     files = @get 'files'
     {length} = files
-    return unless 0 <= index < length
-    files.at(@get 'index').set 'active', false
-    active = files.at index
-    active.set 'active', true
-    @set 'index', index
-    App.set 'basename', active.get 'basename'
+    return unless 0 <= active < length
+    old = files.at @get 'active'
+    now = files.at active
+    old.set active: false
+    now.set active: true
+    @set { active }
+    App.set basename: now.get 'basename'
 
 DirView = Backbone.View.extend
   tagName: 'ul'
-  initialize: ->
-    @collection.on 'reset', @render, @
+  className: 'dir'
   render: ->
-    @collection.each (file) =>
-      fileView = new FileView model: file
+    @collection.each (model) =>
+      fileView = new FileView { model }
       @$el.append fileView.render().el
-    @model.goRel 0
+    @model.go 0
     @
-
-Column = Backbone.View.extend
-  className: 'column'
-
-Columns = Backbone.View.extend
-  shortcuts:
-    'g, shift+k, home': 'home'
-    'shift+g, shift+j, end': 'end'
-    'j, s, down': 'down'
-    'k, w, up': 'up'
-    'l, right': 'right'
-    'h, left': 'left'
   initialize: ->
-    for shortcut, f of @shortcuts
-      key shortcut, @[f].bind @
-    App.on 'change:dirname', @append, @
-  append: (App, dirname) ->
-    col = new Column
-    @$el.append col.render().el
-    App.rpc 'ls', [dirname], (files) =>
-      files = new Files files
-      @dir = dir = new Dir { files }
-      dirView = new DirView
-        collection: files
-        model: dir
-      col.$el.append dirView.render().el
-  home: ->
-    @dir.goAbs 0
-  end: ->
-    @dir.goAbs -1
+    @collection = @model.get 'files'
+    @model.on 'remove', @remove, @
+
+Dirs = Backbone.Collection.extend
+  model: Dir
+
+DirsView = Backbone.View.extend
+  shortcuts:
+    'j, down': 'down'
+    'k, up': 'up'
+    'l, right': 'right'
+  initialize: ->
+    for shortcut, cb of @shortcuts
+      key shortcut, @[cb].bind @
+    @collection.on 'add', @add, @
+    @model.on 'change:dirname', @dirname, @
+  add: (model) ->
+    @model = model
+    dirView = new DirView { model }
+    @$el.append dirView.render().el
+    App.set dirname: model.get 'dirname'
   down: ->
-    @dir.goRel +1
+    @model.goDelta +1
   up: ->
-    @dir.goRel -1
+    @model.goDelta -1
   right: ->
     dirname  = App.get 'dirname'
     basename = App.get 'basename'
-    App.set 'dirname', dirname + basename + '/'
-  left: ->
+    App.set dirname: dirname + basename + '/'
+  dirname: (App, dirname) ->
+    App.rpc 'ls', [dirname], (files) =>
+      files = new Files files
+      dir = new Dir { files, dirname }
+      @collection.add dir
 
 Header = Backbone.View.extend
   template: JST.header
   render: ->
-    @$el.html @template App.toJSON()
+    @$el.html @template @model.toJSON()
     @
   initialize: ->
-    App.on 'change', @render, @
+    @model.on 'change', @render, @
 
 Application = Backbone.Model.extend
   defaults:
     basename: ''
   rpc: (method, args, cb) ->
-    $.ajax
-      type: 'POST'
-      url: '/rpc'
-      data: { method, args }
-      dataType: 'json'
-      success: cb
+    $.post '/rpc', { method, args }, cb, 'json'
 
 App = new Application
-new Header el: '#header'
-new Columns el: '#columns'
+header = new Header
+  model: App
+  el: '#header'
+dirsView = new DirsView
+  collection: new Dirs
+  model: App
+  el: '#dirs'
+
 App.rpc 'env', ['HOME', 'USER', 'HOSTNAME'], (data) ->
   [dirname, user, hostname] = data
   dirname += '/'

@@ -5,7 +5,7 @@ body {
   font-size: 12pt;
 }
 
-.column {
+.dir {
   display: inline-block;
   vertical-align: top;
   width: 200px;
