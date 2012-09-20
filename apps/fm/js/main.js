@@ -56,6 +56,12 @@
     defaults: {
       active: 0
     },
+    goAbs: function(active) {
+      if (active < 0) {
+        active += this.get('files').length;
+      }
+      return this.go(active);
+    },
     goDelta: function(delta) {
       var active;
       active = delta + this.get('active');
@@ -114,6 +120,8 @@
 
   DirsView = Backbone.View.extend({
     shortcuts: {
+      'g, shift+k, home': 'home',
+      'shift+g, shift+j, end': 'end',
       'h, left': 'left',
       'j, down': 'down',
       'k, up': 'up',
@@ -150,6 +158,12 @@
       return App.set({
         dirname: model.get('dirname')
       });
+    },
+    home: function() {
+      return this.model.goAbs(0);
+    },
+    end: function() {
+      return this.model.goAbs(-1);
     },
     left: function() {
       return this.collection.pop();

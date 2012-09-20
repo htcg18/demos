@@ -36,6 +36,10 @@ Files = Backbone.Collection.extend
 Dir = Backbone.Model.extend
   defaults:
     active: 0
+  goAbs: (active) ->
+    if active < 0
+      active += @get('files').length
+    @go active
   goDelta: (delta) ->
     active = delta + @get 'active'
     @go active
@@ -69,6 +73,8 @@ Dirs = Backbone.Collection.extend
 
 DirsView = Backbone.View.extend
   shortcuts:
+    'g, shift+k, home': 'home'
+    'shift+g, shift+j, end': 'end'
     'h, left': 'left'
     'j, down': 'down'
     'k, up': 'up'
@@ -89,6 +95,10 @@ DirsView = Backbone.View.extend
     dirView = new DirView { model }
     @$el.append dirView.render().el
     App.set dirname: model.get 'dirname'
+  home: ->
+    @model.goAbs 0
+  end: ->
+    @model.goAbs -1
   left: ->
     @collection.pop()
   down: ->
