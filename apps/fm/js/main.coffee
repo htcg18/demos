@@ -121,10 +121,10 @@ DirsView = Backbone.View.extend
 Header = Backbone.View.extend
   template: JST.header
   render: ->
-    @$el.html @template @model.toJSON()
+    @$el.html @template App.toJSON()
     @
   initialize: ->
-    @model.on 'change', @render, @
+    App.on 'change', @render, @
 
 Application = Backbone.Model.extend
   defaults:
@@ -135,7 +135,6 @@ Application = Backbone.Model.extend
 
 App = new Application
 header = new Header
-  model: App
   el: '#header'
 dirsView = new DirsView
   collection: new Dirs

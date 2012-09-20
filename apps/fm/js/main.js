@@ -203,11 +203,11 @@
   Header = Backbone.View.extend({
     template: JST.header,
     render: function() {
-      this.$el.html(this.template(this.model.toJSON()));
+      this.$el.html(this.template(App.toJSON()));
       return this;
     },
     initialize: function() {
-      return this.model.on('change', this.render, this);
+      return App.on('change', this.render, this);
     }
   });
 
@@ -227,7 +227,6 @@
   App = new Application;
 
   header = new Header({
-    model: App,
     el: '#header'
   });
 
