@@ -136,13 +136,13 @@
       }
       this.collection.on('add', this.add, this);
       this.collection.on('remove', this.remove, this);
-      return this.model.on('change:dirname', this.dirname, this);
+      return App.on('change:dirname', this.dirname, this);
     },
     remove: function(model, collection) {
       var basename, dirname;
-      this.model = this.collection.at(this.collection.length - 1);
-      dirname = this.model.get('dirname');
-      basename = this.model.get('basename');
+      this.dir = this.collection.at(this.collection.length - 1);
+      dirname = this.dir.get('dirname');
+      basename = this.dir.get('basename');
       return App.set({
         dirname: dirname,
         basename: basename
@@ -150,7 +150,7 @@
     },
     add: function(model) {
       var dirView;
-      this.model = model;
+      this.dir = model;
       dirView = new DirView({
         model: model
       });
@@ -160,19 +160,19 @@
       });
     },
     home: function() {
-      return this.model.goAbs(0);
+      return this.dir.goAbs(0);
     },
     end: function() {
-      return this.model.goAbs(-1);
+      return this.dir.goAbs(-1);
     },
     left: function() {
       return this.collection.pop();
     },
     down: function() {
-      return this.model.goDelta(+1);
+      return this.dir.goDelta(+1);
     },
     up: function() {
-      return this.model.goDelta(-1);
+      return this.dir.goDelta(-1);
     },
     right: function() {
       var basename, dirname;
@@ -233,7 +233,6 @@
 
   dirsView = new DirsView({
     collection: new Dirs,
-    model: App,
     el: '#dirs'
   });
 

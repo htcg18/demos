@@ -84,27 +84,27 @@ DirsView = Backbone.View.extend
       key shortcut, @[cb].bind @
     @collection.on 'add', @add, @
     @collection.on 'remove', @remove, @
-    @model.on 'change:dirname', @dirname, @
+    App.on 'change:dirname', @dirname, @
   remove: (model, collection) ->
-    @model = @collection.at @collection.length - 1
-    dirname  = @model.get 'dirname'
-    basename = @model.get 'basename'
+    @dir = @collection.at @collection.length - 1
+    dirname  = @dir.get 'dirname'
+    basename = @dir.get 'basename'
     App.set { dirname, basename }
   add: (model) ->
-    @model = model
+    @dir = model
     dirView = new DirView { model }
     @$el.append dirView.render().el
     App.set dirname: model.get 'dirname'
   home: ->
-    @model.goAbs 0
+    @dir.goAbs 0
   end: ->
-    @model.goAbs -1
+    @dir.goAbs -1
   left: ->
     @collection.pop()
   down: ->
-    @model.goDelta +1
+    @dir.goDelta +1
   up: ->
-    @model.goDelta -1
+    @dir.goDelta -1
   right: ->
     dirname  = App.get 'dirname'
     basename = App.get 'basename'
@@ -139,7 +139,6 @@ header = new Header
   el: '#header'
 dirsView = new DirsView
   collection: new Dirs
-  model: App
   el: '#dirs'
 
 App.rpc 'env', ['HOME', 'USER', 'HOSTNAME'], (data) ->
