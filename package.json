@@ -8,6 +8,6 @@
   "dependencies": {
     "express": "3.x",
     "mmmagic": "0.x",
-    "step": "0.x"
+    "underscore": "1.x"
   }
 }

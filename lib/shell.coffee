@@ -4,8 +4,8 @@ fs   = require 'fs'
 os   = require 'os'
 path = require 'path'
 
-mmm  = require 'mmmagic'
-step = require 'step'
+_   = require 'underscore'
+mmm = require 'mmmagic'
 
 magic = new mmm.Magic mmm.MAGIC_MIME_TYPE
 
@@ -40,15 +40,15 @@ module.exports =
       dirname = path.resolve 'apps', dirname
     fs.readdir dirname, (err, basenames) ->
       throw err if err
-      step ->
-        group = @group()
-        for basename in basenames
-          abs = path.join dirname, basename
-          fs.stat abs, group()
-        return # prevent coffeescript from returning a value and confusing step
-      , (err, stats) ->
-        throw err if err
-        for stat, i in stats
-          stat.basename = basenames[i]
-          stat.type = getType stat
+      stats = []
+      after = _.after basenames.length, ->
         cb stats
+      for basename in basenames
+        do (basename) ->
+          absolute = path.join dirname, basename
+          fs.stat absolute, (err, stat) ->
+            throw err if err
+            stat.basename = basename
+            stat.type = getType stat
+            stats.push stat
+            after()
