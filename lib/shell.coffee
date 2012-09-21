@@ -27,6 +27,17 @@ getType = (stat) ->
   if stat.isSocket()
     return 'socket'
 
+asyncMap = (list, iterator, cb) ->
+  {length} = list
+  results = new Array length
+  after = _.after length, -> cb results
+  for item, i in list
+    do (i) ->
+      iterator item, (err, result) ->
+        throw err if err
+        results[i] = result
+        after()
+
 module.exports =
   env: (args, cb) ->
     values = []
@@ -40,15 +51,9 @@ module.exports =
       dirname = path.resolve 'apps', dirname
     fs.readdir dirname, (err, basenames) ->
       throw err if err
-      stats = []
-      after = _.after basenames.length, ->
+      absolutes = (path.join dirname, basename for basename in basenames)
+      asyncMap absolutes, fs.stat, (stats) ->
+        for stat, i in stats
+          stat.basename = basenames[i]
+          stat.type = getType stat
         cb stats
-      for basename in basenames
-        do (basename) ->
-          absolute = path.join dirname, basename
-          fs.stat absolute, (err, stat) ->
-            throw err if err
-            stat.basename = basename
-            stat.type = getType stat
-            stats.push stat
-            after()
